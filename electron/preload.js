@@ -1,0 +1,35 @@
+const { contextBridge, ipcRenderer } = require("electron");
+
+function subscribe(channel, callback) {
+  if (typeof callback !== "function") {
+    return () => {};
+  }
+
+  const handler = (_event, payload) => callback(payload);
+  ipcRenderer.on(channel, handler);
+  return () => ipcRenderer.removeListener(channel, handler);
+}
+
+contextBridge.exposeInMainWorld("electronAPI", {
+  fetchVideoInfo: (url) => ipcRenderer.invoke("video:fetch-info", url),
+  getJobs: () => ipcRenderer.invoke("video:get-jobs"),
+  chooseDownloadFolder: () => ipcRenderer.invoke("dialog:select-folder"),
+  downloadVideo: (payload) => ipcRenderer.invoke("video:start-download", payload),
+  pauseDownload: (jobId) => ipcRenderer.invoke("video:pause-download", jobId),
+  resumeDownload: (jobId) => ipcRenderer.invoke("video:resume-download", jobId),
+  cancelDownload: (jobId) => ipcRenderer.invoke("video:cancel-download", jobId),
+  clearFinished: () => ipcRenderer.invoke("video:clear-finished"),
+  setGlobalSpeedLimit: (value) => ipcRenderer.invoke("settings:set-global-speed-limit", value),
+  checkYtDlpUpdate: () => ipcRenderer.invoke("ytdlp:check-update"),
+  updateYtDlp: () => ipcRenderer.invoke("ytdlp:update"),
+  windowMinimize: () => ipcRenderer.invoke("window:minimize"),
+  windowToggleMaximize: () => ipcRenderer.invoke("window:toggle-maximize"),
+  windowClose: () => ipcRenderer.invoke("window:close"),
+  onJobsUpdated: (callback) => subscribe("video:jobs-updated", callback),
+  onToast: (callback) => subscribe("app:toast", callback),
+  onDownloadProgress: (callback) => subscribe("video:download-progress", callback),
+  onDownloadLog: (callback) => subscribe("video:download-log", callback),
+  onDownloadStatus: (callback) => subscribe("video:download-status", callback),
+  onDownloadComplete: (callback) => subscribe("video:download-complete", callback),
+  onDownloadError: (callback) => subscribe("video:download-error", callback)
+});

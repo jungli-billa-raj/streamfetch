@@ -1,0 +1,6 @@
+node_modules
+dist
+release
+bin/*.exe
+*.log
+npm-debug.log*
