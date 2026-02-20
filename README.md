@@ -2,6 +2,11 @@
 
 Fast Windows desktop downloader for YouTube and other platforms, powered by Electron, React, and `yt-dlp`.
 
+## Screenshots
+
+![StreamFetch Screenshot 1](Screenshots/Pic1%20(1).png)
+![StreamFetch Screenshot 2](Screenshots/Pic1%20(2).png)
+
 ## Why StreamFetch
 
 StreamFetch focuses on reliability over flashy one-off downloads:
@@ -81,11 +86,6 @@ These binaries are not committed to git to keep the repository lightweight.
 Install from GitHub Releases to avoid manual setup. Each release includes:
 - Windows installer (`Setup .exe`)
 - Portable executable (`.exe`)
-
-## Screenshots
-
-![StreamFetch Screenshot 1](Screenshots/Pic1%20(1).png)
-![StreamFetch Screenshot 2](Screenshots/Pic1%20(2).png)
 
 ## License
 
