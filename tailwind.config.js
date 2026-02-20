@@ -5,14 +5,29 @@ module.exports = {
     extend: {
       colors: {
         app: {
-          bg: "#F7F3EA",
-          card: "#FFFFFF",
-          accent: "#007AFF",
-          accentSoft: "#5AC8FA",
-          border: "#E5E7EB",
-          text: "#111827",
-          muted: "#6B7280",
-          panel: "#F3F4F6"
+          bg: "rgb(var(--app-bg) / <alpha-value>)",
+          card: "rgb(var(--app-card) / <alpha-value>)",
+          accent: "rgb(var(--app-accent) / <alpha-value>)",
+          accentSoft: "rgb(var(--app-accent-soft) / <alpha-value>)",
+          border: "rgb(var(--app-border) / <alpha-value>)",
+          text: "rgb(var(--app-text) / <alpha-value>)",
+          muted: "rgb(var(--app-muted) / <alpha-value>)",
+          panel: "rgb(var(--app-panel) / <alpha-value>)",
+          dangerBg: "rgb(var(--app-danger-bg) / <alpha-value>)",
+          dangerBgHover: "rgb(var(--app-danger-bg-hover) / <alpha-value>)",
+          dangerBorder: "rgb(var(--app-danger-border) / <alpha-value>)",
+          dangerText: "rgb(var(--app-danger-text) / <alpha-value>)",
+          infoBg: "rgb(var(--app-info-bg) / <alpha-value>)",
+          infoBorder: "rgb(var(--app-info-border) / <alpha-value>)",
+          infoText: "rgb(var(--app-info-text) / <alpha-value>)",
+          successBg: "rgb(var(--app-success-bg) / <alpha-value>)",
+          successBorder: "rgb(var(--app-success-border) / <alpha-value>)",
+          successText: "rgb(var(--app-success-text) / <alpha-value>)",
+          warningBg: "rgb(var(--app-warning-bg) / <alpha-value>)",
+          warningBorder: "rgb(var(--app-warning-border) / <alpha-value>)",
+          warningText: "rgb(var(--app-warning-text) / <alpha-value>)",
+          subtleBg: "rgb(var(--app-subtle-bg) / <alpha-value>)",
+          subtleBorder: "rgb(var(--app-subtle-border) / <alpha-value>)"
         }
       },
       fontFamily: {

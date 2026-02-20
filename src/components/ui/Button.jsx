@@ -3,9 +3,9 @@ import { cn } from "../../lib/cn";
 const VARIANT_CLASSES = {
   primary:
     "border-transparent bg-gradient-to-r from-app-accentSoft to-app-accent text-white shadow-button hover:-translate-y-0.5 hover:shadow-buttonHover",
-  secondary: "border-app-border bg-white text-app-text hover:border-app-accent/35 hover:bg-app-bg",
+  secondary: "border-app-border bg-app-card text-app-text hover:border-app-accent/35 hover:bg-app-bg",
   ghost: "border-transparent bg-app-bg text-app-text hover:bg-app-border/50",
-  danger: "border-red-200 bg-red-50 text-red-600 hover:border-red-300 hover:bg-red-100"
+  danger: "border-app-dangerBorder bg-app-dangerBg text-app-dangerText hover:border-app-dangerBorder hover:bg-app-dangerBgHover"
 };
 
 const SIZE_CLASSES = {

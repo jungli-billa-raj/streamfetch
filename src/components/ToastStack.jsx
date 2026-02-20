@@ -7,9 +7,9 @@ function ToastStack({ toasts, onDismiss }) {
         <article
           key={toast.id}
           className={cn(
-            "pointer-events-auto flex items-start justify-between gap-3 rounded-2xl border bg-white p-3 shadow-card",
-            toast.type === "error" && "border-red-200",
-            toast.type === "success" && "border-emerald-200",
+            "pointer-events-auto flex items-start justify-between gap-3 rounded-2xl border bg-app-card p-3 shadow-card",
+            toast.type === "error" && "border-app-dangerBorder",
+            toast.type === "success" && "border-app-successBorder",
             toast.type !== "error" && toast.type !== "success" && "border-app-border"
           )}
         >

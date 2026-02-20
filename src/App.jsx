@@ -11,6 +11,7 @@ import Input from "./components/ui/Input";
 
 const QUALITY_OPTIONS = ["best", "1080p", "720p", "480p", "240p", "144p"];
 const PROJECT_REPO_URL = "https://github.com/Shripad735/streamfetch";
+const THEME_STORAGE_KEY = "streamfetch-theme";
 
 function formatDuration(totalSeconds) {
   if (!totalSeconds || Number.isNaN(totalSeconds)) return "Unknown";
@@ -46,6 +47,7 @@ function App() {
   const [selectedJobId, setSelectedJobId] = useState("");
   const [toasts, setToasts] = useState([]);
   const [maximized, setMaximized] = useState(false);
+  const [theme, setTheme] = useState("light");
 
   const [ytDlpState, setYtDlpState] = useState({
     checking: false,
@@ -82,6 +84,18 @@ function App() {
     }, 500);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme === "dark" || savedTheme === "light") {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   useEffect(() => {
     if (!hasElectron) return undefined;
@@ -314,7 +328,7 @@ function App() {
           <div className="flex items-center gap-2" style={{ WebkitAppRegion: "no-drag" }}>
             <button
               type="button"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-white text-app-muted transition-colors duration-200 hover:border-app-accent/40 hover:text-app-accent"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-app-card text-app-muted transition-colors duration-200 hover:border-app-accent/40 hover:text-app-accent"
               onClick={handleOpenRepo}
               title="Open source on GitHub"
               aria-label="Open StreamFetch GitHub repository"
@@ -324,13 +338,31 @@ function App() {
               </svg>
             </button>
             <button
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-white text-xs text-app-muted transition-colors duration-200 hover:border-app-accent/40 hover:text-app-accent"
+              type="button"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-app-card text-app-muted transition-colors duration-200 hover:border-app-accent/40 hover:text-app-accent"
+              onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
+              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {theme === "dark" ? (
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4.2" />
+                  <path d="M12 2.5v2.1M12 19.4v2.1M4.6 4.6l1.5 1.5M17.9 17.9l1.5 1.5M2.5 12h2.1M19.4 12h2.1M4.6 19.4l1.5-1.5M17.9 6.1l1.5-1.5" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  <path d="M21 12.7A9 9 0 1 1 11.3 3a7.3 7.3 0 0 0 9.7 9.7z" />
+                </svg>
+              )}
+            </button>
+            <button
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-app-card text-xs text-app-muted transition-colors duration-200 hover:border-app-accent/40 hover:text-app-accent"
               onClick={() => hasElectron && window.electronAPI.windowMinimize()}
             >
               -
             </button>
             <button
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-white text-xs text-app-muted transition-colors duration-200 hover:border-app-accent/40 hover:text-app-accent"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-app-card text-xs text-app-muted transition-colors duration-200 hover:border-app-accent/40 hover:text-app-accent"
               onClick={async () => {
                 if (!hasElectron) return;
                 const state = await window.electronAPI.windowToggleMaximize();
@@ -340,7 +372,7 @@ function App() {
               {maximized ? "o" : "+"}
             </button>
             <button
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-white text-xs text-app-muted transition-colors duration-200 hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-app-border bg-app-card text-xs text-app-muted transition-colors duration-200 hover:border-app-dangerBorder hover:bg-app-dangerBg hover:text-app-dangerText"
               onClick={() => hasElectron && window.electronAPI.windowClose()}
             >
               x
@@ -352,7 +384,7 @@ function App() {
           <Card className="min-h-0 overflow-hidden p-4 md:p-5">
             <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1 [scrollbar-color:#CBD5E1_transparent] [scrollbar-width:thin] [&>*]:shrink-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300/70">
               {!hasElectron && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div className="rounded-2xl border border-app-dangerBorder bg-app-dangerBg px-4 py-3 text-sm text-app-dangerText">
                   Electron bridge unavailable. Run inside desktop app.
                 </div>
               )}
@@ -470,7 +502,11 @@ function App() {
                 )}
               </Card>
 
-              {errorMessage && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errorMessage}</div>}
+              {errorMessage && (
+                <div className="rounded-2xl border border-app-dangerBorder bg-app-dangerBg px-4 py-3 text-sm text-app-dangerText">
+                  {errorMessage}
+                </div>
+              )}
             </div>
           </Card>
 

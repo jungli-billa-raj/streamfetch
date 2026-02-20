@@ -37,8 +37,23 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path bin | Out-Null
-          $ffmpegPath = (Get-Command ffmpeg.exe -ErrorAction Stop).Source
-          Copy-Item $ffmpegPath "bin/ffmpeg.exe" -Force
+          $ffmpegCandidates = Get-ChildItem -Path "$env:ChocolateyInstall\lib" -Filter "ffmpeg.exe" -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match "\\tools\\.*\\bin\\ffmpeg\.exe$" }
+
+          if (-not $ffmpegCandidates) {
+            Write-Error "Could not find FFmpeg binary in Chocolatey package files."
+            exit 1
+          }
+
+          $ffmpegFile = $ffmpegCandidates | Sort-Object Length -Descending | Select-Object -First 1
+          if ($ffmpegFile.Length -lt 50MB) {
+            Write-Error "Resolved FFmpeg binary is too small ($($ffmpegFile.Length) bytes). This usually means a shim was selected."
+            exit 1
+          }
+
+          Copy-Item $ffmpegFile.FullName "bin/ffmpeg.exe" -Force
+          $bundled = Get-Item "bin/ffmpeg.exe"
+          Write-Host "Bundled FFmpeg: $($bundled.FullName) ($([Math]::Round($bundled.Length / 1MB, 2)) MB)"
 
       - name: Download yt-dlp
         shell: pwsh
@@ -77,6 +92,19 @@ jobs:
             exit 1
           }
           $exeFiles | Select-Object FullName, Length
+
+          $packagedFfmpeg = Get-ChildItem -Path "release" -Filter "ffmpeg.exe" -File -Recurse |
+            Where-Object { $_.FullName -match "\\resources\\bin\\ffmpeg\.exe$" } |
+            Select-Object -First 1
+          if (-not $packagedFfmpeg) {
+            Write-Error "Packaged FFmpeg was not found under release/**/resources/bin/ffmpeg.exe"
+            exit 1
+          }
+          if ($packagedFfmpeg.Length -lt 50MB) {
+            Write-Error "Packaged FFmpeg is too small ($($packagedFfmpeg.Length) bytes)."
+            exit 1
+          }
+          Write-Host "Packaged FFmpeg size: $([Math]::Round($packagedFfmpeg.Length / 1MB, 2)) MB"
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2

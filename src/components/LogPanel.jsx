@@ -19,8 +19,8 @@ function LogPanel({ title, lines }) {
                 key={item.id || `${idx}-${item.message}`}
                 className={cn(
                   "mb-1 break-words text-app-text",
-                  item.level === "error" && "text-red-600",
-                  item.level === "warn" && "text-amber-700",
+                  item.level === "error" && "text-app-dangerText",
+                  item.level === "warn" && "text-app-warningText",
                   item.level === "info" && "text-app-text"
                 )}
               >

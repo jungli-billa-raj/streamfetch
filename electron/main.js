@@ -65,7 +65,7 @@ function createWindow() {
     minWidth: 1080,
     minHeight: 720,
     frame: false,
-    backgroundColor: "#0B0F19",
+    backgroundColor: "#F7F3EA",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -92,6 +92,22 @@ function getBundledBinaryPath(binaryName) {
     : path.join(__dirname, "..", "bin", binaryName);
 }
 
+function isUsableFfmpegBinary(candidatePath) {
+  if (!candidatePath || !fs.existsSync(candidatePath)) {
+    return false;
+  }
+
+  try {
+    const probe = spawnSync(candidatePath, ["-version"], {
+      windowsHide: true,
+      timeout: 10000
+    });
+    return probe.status === 0;
+  } catch {
+    return false;
+  }
+}
+
 function ensureManagedYtDlpPath() {
   const managedDir = path.join(app.getPath("userData"), "bin");
   const managedPath = path.join(managedDir, "yt-dlp.exe");
@@ -111,12 +127,12 @@ function ensureManagedYtDlpPath() {
 
 function getFfmpegPath() {
   const managed = path.join(app.getPath("userData"), "bin", "ffmpeg.exe");
-  if (fs.existsSync(managed)) {
+  if (isUsableFfmpegBinary(managed)) {
     return managed;
   }
 
   const bundledPath = getBundledBinaryPath("ffmpeg.exe");
-  return fs.existsSync(bundledPath) ? bundledPath : "";
+  return isUsableFfmpegBinary(bundledPath) ? bundledPath : "";
 }
 
 function isValidHttpUrl(value) {

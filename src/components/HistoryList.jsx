@@ -16,7 +16,7 @@ function HistoryList({ entries, onClear, onSelect }) {
         {entries.map((item) => (
           <article
             key={item.id}
-            className="cursor-pointer rounded-2xl border border-app-border bg-app-bg p-3 transition-all duration-200 ease-out hover:border-app-accent/35 hover:bg-white"
+            className="cursor-pointer rounded-2xl border border-app-border bg-app-bg p-3 transition-all duration-200 ease-out hover:border-app-accent/35 hover:bg-app-card"
             onClick={() => onSelect(item.id)}
           >
             <h4 className="mb-1 line-clamp-1 font-display text-sm font-semibold text-app-text">{item.title}</h4>

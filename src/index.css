@@ -2,6 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --app-bg: 247 243 234;
+  --app-card: 255 255 255;
+  --app-accent: 0 122 255;
+  --app-accent-soft: 90 200 250;
+  --app-border: 229 231 235;
+  --app-text: 17 24 39;
+  --app-muted: 107 114 128;
+  --app-panel: 243 244 246;
+  --app-danger-bg: 254 242 242;
+  --app-danger-bg-hover: 254 226 226;
+  --app-danger-border: 254 202 202;
+  --app-danger-text: 220 38 38;
+  --app-info-bg: 239 246 255;
+  --app-info-border: 191 219 254;
+  --app-info-text: 0 122 255;
+  --app-success-bg: 236 253 245;
+  --app-success-border: 167 243 208;
+  --app-success-text: 5 150 105;
+  --app-warning-bg: 255 251 235;
+  --app-warning-border: 253 230 138;
+  --app-warning-text: 180 83 9;
+  --app-subtle-bg: 248 250 252;
+  --app-subtle-border: 226 232 240;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --app-bg: 12 16 24;
+  --app-card: 19 25 37;
+  --app-accent: 88 166 255;
+  --app-accent-soft: 40 146 255;
+  --app-border: 46 58 78;
+  --app-text: 230 238 252;
+  --app-muted: 152 166 190;
+  --app-panel: 14 20 31;
+  --app-danger-bg: 61 24 24;
+  --app-danger-bg-hover: 78 31 31;
+  --app-danger-border: 138 56 56;
+  --app-danger-text: 255 173 173;
+  --app-info-bg: 21 35 56;
+  --app-info-border: 52 86 133;
+  --app-info-text: 136 195 255;
+  --app-success-bg: 20 52 42;
+  --app-success-border: 47 119 93;
+  --app-success-text: 110 231 183;
+  --app-warning-bg: 66 47 23;
+  --app-warning-border: 128 94 39;
+  --app-warning-text: 253 224 71;
+  --app-subtle-bg: 24 33 48;
+  --app-subtle-border: 54 68 92;
+  color-scheme: dark;
+}
+
 @layer base {
   * {
     @apply box-border;
