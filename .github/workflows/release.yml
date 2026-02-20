@@ -30,6 +30,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install FFmpeg
+        run: choco install ffmpeg -y --no-progress
+
+      - name: Bundle ffmpeg.exe
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path bin | Out-Null
+          $ffmpegPath = (Get-Command ffmpeg.exe -ErrorAction Stop).Source
+          Copy-Item $ffmpegPath "bin/ffmpeg.exe" -Force
+
       - name: Download yt-dlp
         shell: pwsh
         env:
