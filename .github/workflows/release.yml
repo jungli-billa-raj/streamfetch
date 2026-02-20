@@ -4,6 +4,11 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -45,9 +50,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Verify generated executables
+        shell: pwsh
+        run: |
+          $exeFiles = Get-ChildItem -Path "release" -Filter "*.exe" -File -Recurse
+          if (-not $exeFiles) {
+            Write-Error "No .exe files found in release/"
+            exit 1
+          }
+          $exeFiles | Select-Object FullName, Length
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/*.exe
+            release/**/*.exe
+          fail_on_unmatched_files: true
           generate_release_notes: true
