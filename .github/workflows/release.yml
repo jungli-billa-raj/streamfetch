@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -106,6 +108,103 @@ jobs:
           }
           Write-Host "Packaged FFmpeg size: $([Math]::Round($packagedFfmpeg.Length / 1MB, 2)) MB"
 
+      - name: Generate release notes from commits
+        shell: pwsh
+        run: |
+          git fetch --tags --force
+
+          $isTagRelease = $env:GITHUB_REF_TYPE -eq "tag"
+          $currentTag = if ($isTagRelease) { $env:GITHUB_REF_NAME } else { "" }
+          $currentRef = if ($isTagRelease) { $currentTag } else { $env:GITHUB_SHA }
+          $displayVersion = if ($isTagRelease) { $currentTag } else { "manual-$($env:GITHUB_SHA.Substring(0,7))" }
+
+          $previousTag = ""
+          $mergedTags = git tag --merged HEAD --sort=-creatordate
+          foreach ($tag in $mergedTags) {
+            if ($currentTag -and $tag -eq $currentTag) { continue }
+            $previousTag = $tag
+            break
+          }
+
+          if (-not $previousTag) {
+            $allTags = git tag --sort=-creatordate
+            foreach ($tag in $allTags) {
+              if ($currentTag -and $tag -eq $currentTag) { continue }
+              $previousTag = $tag
+              break
+            }
+          }
+
+          $header = @(
+            "# StreamFetch $displayVersion",
+            ""
+          )
+
+          $featureLines = @()
+          $fixLines = @()
+          $otherLines = @()
+          $compareLine = ""
+
+          if ($previousTag) {
+            $range = "$previousTag..$currentRef"
+            $compareLine = "- Compare: $($env:GITHUB_SERVER_URL)/$($env:GITHUB_REPOSITORY)/compare/$previousTag...$currentRef"
+            $subjects = git log --no-merges --pretty=format:"%s" $range
+          } else {
+            $subjects = git log --no-merges --pretty=format:"%s" -n 50 $currentRef
+          }
+
+          foreach ($subject in $subjects) {
+            $line = [string]$subject
+            if ([string]::IsNullOrWhiteSpace($line)) { continue }
+            $trimmed = $line.Trim()
+            if ($trimmed -match "^(feat|feature)(\(.+\))?:") {
+              $featureLines += "- $trimmed"
+            } elseif ($trimmed -match "^(fix|hotfix)(\(.+\))?:") {
+              $fixLines += "- $trimmed"
+            } else {
+              $otherLines += "- $trimmed"
+            }
+          }
+
+          $notes = New-Object System.Collections.Generic.List[string]
+          $header | ForEach-Object { [void]$notes.Add($_) }
+
+          if ($previousTag) {
+            [void]$notes.Add("- Base release: $previousTag")
+          } else {
+            [void]$notes.Add("- Base release: (first tagged release context not found)")
+          }
+          if ($compareLine) {
+            [void]$notes.Add($compareLine)
+          }
+          [void]$notes.Add("")
+
+          [void]$notes.Add("## Features")
+          if ($featureLines.Count -gt 0) {
+            $featureLines | ForEach-Object { [void]$notes.Add($_) }
+          } else {
+            [void]$notes.Add("- No feature-tagged commits found.")
+          }
+          [void]$notes.Add("")
+
+          [void]$notes.Add("## Fixes")
+          if ($fixLines.Count -gt 0) {
+            $fixLines | ForEach-Object { [void]$notes.Add($_) }
+          } else {
+            [void]$notes.Add("- No fix-tagged commits found.")
+          }
+          [void]$notes.Add("")
+
+          [void]$notes.Add("## Other Changes")
+          if ($otherLines.Count -gt 0) {
+            $otherLines | ForEach-Object { [void]$notes.Add($_) }
+          } else {
+            [void]$notes.Add("- No additional commit subjects found.")
+          }
+
+          $notes | Set-Content -Path "release-notes.md" -Encoding UTF8
+          Write-Host "Generated release-notes.md"
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
@@ -113,4 +212,4 @@ jobs:
             release/StreamFetch-Setup-*.exe
             release/StreamFetch-Portable-*.exe
           fail_on_unmatched_files: true
-          generate_release_notes: true
+          body_path: release-notes.md
