@@ -123,7 +123,7 @@ function unixManagedYtDlpPath() {
   throw new Error("yt-dlp not found in PATH");
 }
 
-function winManagedYtDplPath() {
+function winManagedYtDlpPath() {
   const managedDir = path.join(app.getPath("userData"), "bin");
   const managedPath = path.join(managedDir, "yt-dlp.exe");
 
@@ -145,7 +145,7 @@ function winManagedYtDplPath() {
 
 function ensureManagedYtDlpPath() {
   if (process.platform === "win32") {
-    return winManagedYtDplPath();
+    return winManagedYtDlpPath();
   }
 
   if (process.platform === "linux" || process.platform === "darwin") {
